@@ -1,23 +1,30 @@
 <template>
   <div class="profile">
     <div class="card">
-      <DoctorIcon class="avatar"/>
+      <DoctorIcon class="avatar" />
       <div class="data">
         <div class="profile-content">
           <div>
-            <strong>{{profile.name}}</strong>
-            <a :href="profile.email" class="email">{{profile.email}}</a>
+            <strong>{{ profile.name }}</strong>
+            <a :href="profile.email" class="email">{{ profile.email }}</a>
           </div>
-          <div class="description">{{profile.description}}</div>
+
+          <div v-if="Array.isArray(profile.description)" class="description">
+            {{ profile.description.join(", ") }}
+          </div>
+
+          <div v-else class="description">
+            {{ profile.description }}
+          </div>
         </div>
         <div class="likes">
-          <span class="likes-icon">💚</span>
-          <span class="likes-value">{{profile.likes}}</span>
+          <span class="heart"></span>
+          <span class="likes-value">{{ profile.likes }}</span>
         </div>
       </div>
     </div>
     <div class="comment">
-      <input class="comment-input" placeholder="Write your comment...">
+      <input class="comment-input" placeholder="Write your comment..." />
     </div>
   </div>
 </template>
@@ -29,15 +36,15 @@ export default {
   name: "ProfileCard",
 
   components: {
-    DoctorIcon
+    DoctorIcon,
   },
 
   props: {
     profile: {
       type: Object,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 };
 </script>
 
@@ -82,12 +89,6 @@ export default {
 
 .description {
   margin-top: 5px;
-}
-
-.likes {
-  color: rgb(76, 202, 114);
-  margin-top: 10px;
-  margin-left: 15px;
 }
 
 .likes-value {

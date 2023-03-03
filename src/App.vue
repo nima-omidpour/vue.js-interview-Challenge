@@ -23,39 +23,21 @@
       <div class="icons-note">
         Icons made by
         <a href="https://www.flaticon.com/authors/freepik" title="Freepik"
-          >Freepik</a
-        >
+          >Freepik
+        </a>
         from
-        <a href="https://www.flaticon.com/" title="Flaticon"
-          >www.flaticon.com</a
-        >
+        <a href="https://www.flaticon.com/" title="Flaticon">
+          www.flaticon.com
+        </a>
       </div>
     </div>
 
-    <div class="section">
-      <p class="header">Add new profile:</p>
-      <div class="flex-row">
-        <label for="newProfileName" class="label">Name:</label>
-        <input id="newProfileName" v-model="newProfile.name" class="input" />
-      </div>
-      <div class="flex-row">
-        <label class="label" for="newProfileEmail">Email:</label>
-        <input id="newProfileEmail" v-model="newProfile.email" class="input" />
-      </div>
-      <div class="flex-row">
-        <label class="label" for="newProfileDescription">Specialisation:</label>
-        <input
-          id="newProfileDescription"
-          v-model="newProfile.description"
-          class="input"
-        />
-      </div>
-      <button @click="addProfile">Add</button>
-    </div>
+    <AddNewProfile @addProfile="addProfile" />
   </div>
 </template>
 
 <script>
+import AddNewProfile from "./components/AddNewProfile.vue";
 import ProfileCard from "./components/ProfileCard";
 
 export default {
@@ -63,16 +45,16 @@ export default {
 
   components: {
     ProfileCard,
+    AddNewProfile,
   },
 
   data() {
     return {
       filter: "",
-      newProfile: {
-        name: "",
-        email: "",
-        description: "",
-      },
+
+      selectedSpecializations: ["Radiologist"],
+      errorMessages: [],
+      validations: { emailIsValid: false, nameIsValid: false },
       profiles: [
         {
           id: 1,
@@ -106,13 +88,15 @@ export default {
       );
     },
   },
+
   methods: {
-    addProfile() {
+    addProfile(newProfile) {
       this.profiles.push({
-        id: this.profiles.length,
-        ...this.newProfile,
+        id: this.profiles.length + 1,
+        ...newProfile,
         likes: 0,
       });
+      console.log(newProfile);
     },
     sortAsc() {
       this.profiles.sort(function (a, b) {
@@ -154,7 +138,7 @@ button {
   display: block;
   padding: 1em;
   width: 100%;
-  background-color: #41B883;
+  background-color: #41b883;
   border: 1px solid;
   color: #fff;
   cursor: pointer;
@@ -218,6 +202,7 @@ button {
   border: 0;
   color: #8f8f8f;
   font-size: 1rem;
+  outline: none;
 }
 
 .buttons {
@@ -249,5 +234,37 @@ button {
 
 .list-leave-active {
   position: absolute;
+}
+
+.error-message {
+  text-align: left !important;
+  margin: -12px 0 16px 8px;
+  font-size: 14px;
+  color: #ef4444;
+  animation: errorFadeInDown 0.5s cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
+.input-error {
+  border: 1px solid #ef4444;
+}
+
+@keyframes errorFadeInDown {
+  0% {
+    -webkit-transform: translate3d(0, -10px, 0);
+    transform: translate3d(0, -10px, 0);
+  }
+
+  59% {
+    opacity: 1;
+    transform: skewX(20deg);
+  }
+  70%,
+  90% {
+    transform: skewX(-20deg);
+  }
+  100% {
+    -webkit-transform: none;
+    transform: none;
+  }
 }
 </style>
