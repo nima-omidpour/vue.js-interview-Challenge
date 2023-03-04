@@ -10,15 +10,22 @@
 
     <transition name="pop" appear>
       <div class="modal" role="dialog" v-if="showModal">
-        <Transition>
-          <div v-if="formStatus.error" class="alert alert-danger" role="alert">
-            user with this information already exist!
-            <span @click="formStatus.error = false" class="closebtn">
-              &times;
-            </span>
-          </div>
-        </Transition>
-        <div class="section">
+        <span v-show="showModal" @click="showModal = false" class="close-modal">
+          &times;
+        </span>
+        <div class="section add-new-profile-section">
+          <Transition>
+            <div
+              v-if="formStatus.error"
+              class="alert alert-danger"
+              role="alert"
+            >
+              user with this information already exist!
+              <span @click="formStatus.error = false" class="closebtn">
+                &times;
+              </span>
+            </div>
+          </Transition>
           <p class="header">Add new profile:</p>
           <div
             class="flex-row input-wrapper"
@@ -309,5 +316,48 @@ export default {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+@media screen and (max-width: 640px) {
+  .add-new-profile-section {
+    width: unset;
+  }
+}
+@media screen and (max-width: 480px) {
+  .close-modal {
+    display: block !important;
+  }
+  .header {
+    font-size: 18px;
+  }
+  .add-new-profile-section {
+    margin: 0 auto;
+    margin-top: 89px;
+    background-color: unset;
+  }
+  .modal {
+    height: 100%;
+    width: 100%;
+    padding: 0 0;
+    border-radius: 0;
+  }
+}
+.close-modal {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  position: absolute;
+  top: 12px;
+  right: 50%;
+  font-size: 34px;
+  z-index: 33434343;
+  background: #fefefe;
+  transform: translateX(50%);
+  transition: all 0.2s;
+  display: none;
+}
+.close-modal:hover {
+  background-color: #e05454;
+  color: #fff;
 }
 </style>

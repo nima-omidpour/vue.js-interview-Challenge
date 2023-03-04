@@ -145,6 +145,10 @@ export default {
 </script>
 
 <style>
+body {
+  padding: 0;
+  margin: 0;
+}
 #app {
   font-family: "Roboto", helvetica, arial, sans-serif;
   text-align: center;
@@ -191,10 +195,32 @@ button {
   background: rgba(0, 0, 0, 0.15);
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 640px) {
   .section {
     width: 50vw;
     max-width: 15em;
+  }
+}
+@media screen and (max-width: 600px) {
+  #app {
+    padding: 44px;
+  }
+  .section {
+    padding: 1.2em;
+  }
+  .add-profile-btn,
+  button {
+    font-size: 16px;
+  }
+}
+@media screen and (max-width: 480px) {
+  #app {
+    padding: 13px;
+  }
+  .section {
+    min-width: unset;
+    max-width: 93vw;
+    padding: 0.3em;
   }
 }
 

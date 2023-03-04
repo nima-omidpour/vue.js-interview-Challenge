@@ -217,4 +217,10 @@ export default {
     opacity: 0;
   }
 }
+
+@media only screen and (max-width: 480px) {
+  .section {
+    min-width: 90vw;
+  }
+}
 </style>
