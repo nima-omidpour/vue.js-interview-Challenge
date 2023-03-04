@@ -18,7 +18,11 @@
           </div>
         </div>
         <div class="likes">
-          <span class="heart"></span>
+          <div @click="toggleLike(profile)" class="heart-and-animated-heart">
+            <div ref="heart" class="heart"></div>
+            <div ref="animatedHeart" class="animation-heart"></div>
+          </div>
+
           <span class="likes-value">{{ profile.likes }}</span>
         </div>
       </div>
@@ -37,6 +41,14 @@ export default {
 
   components: {
     DoctorIcon,
+  },
+
+  methods: {
+    toggleLike(profile) {
+      this.$refs.heart.classList.toggle("fill-color");
+      this.$refs.animatedHeart.classList.toggle("animation");
+      this.$emit("toggle-like", profile);
+    },
   },
 
   props: {
@@ -93,6 +105,7 @@ export default {
 
 .likes-value {
   margin-left: 5px;
+  margin-bottom: 8px;
 }
 
 .comment {
@@ -102,5 +115,106 @@ export default {
 
 .comment-input {
   width: 100%;
+  padding: 7px;
+  outline: none;
+  font-size: 12px;
+}
+
+.heart.fill-color {
+  background-color: #89c329;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  margin-left: 20px;
+  gap: 12px;
+}
+
+.heart {
+  position: relative;
+  height: 15px;
+  width: 15px;
+  background: #c9c9c9;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  border-radius: 0 0 0 10px;
+  transform: rotate(-45deg);
+  cursor: pointer;
+}
+
+.heart::before {
+  position: absolute;
+  content: "";
+  top: -50%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border-radius: 50%;
+}
+.heart:after {
+  position: absolute;
+  content: "";
+  right: -50%;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border-radius: 50%;
+}
+.heart-and-animated-heart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.animation-heart {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 15px;
+  height: 15px;
+  background: #89c329;
+  transform: rotate(-45deg);
+  border-radius: 0 0 0 10px;
+  cursor: pointer;
+  visibility: hidden;
+}
+.animation-heart::after {
+  position: absolute;
+  content: "";
+  right: 0;
+  top: -50%;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.animation-heart::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  right: -50%;
+  top: 0;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.animation-heart.animation {
+  animation: popup 0.5s linear;
+  visibility: visible;
+}
+
+@keyframes popup {
+  100% {
+    transform: scale(1.5) rotate(-45deg);
+    opacity: 0;
+  }
 }
 </style>

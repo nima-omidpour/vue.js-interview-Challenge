@@ -1,44 +1,76 @@
 <template>
-  <div class="section">
-    <p class="header">Add new profile:</p>
-    <div class="flex-row" :class="{ 'input-error': errorMessages.name }">
-      <label for="newProfileName" class="label">Name:</label>
-      <input id="newProfileName" v-model="newProfile.name" class="input" />
-    </div>
-    <p class="error-message" v-show="errorMessages.name">
-      {{ errorMessages.name }}
-    </p>
-    <div class="flex-row" :class="{ 'input-error': errorMessages.email }">
-      <label class="label" for="newProfileEmail">Email:</label>
-      <input
-        type="email"
-        id="newProfileEmail"
-        v-model="newProfile.email"
-        class="input"
-      />
-    </div>
+  <div>
+    <transition name="fade" appear>
+      <div
+        class="modal-overlay"
+        v-if="showModal"
+        @click="showModal = false"
+      ></div>
+    </transition>
 
-    <p class="error-message" v-show="errorMessages.email">
-      {{ errorMessages.email }}
-    </p>
+    <transition name="pop" appear>
+      <div class="modal" role="dialog" v-if="showModal">
+        <Transition>
+          <div v-if="formStatus.error" class="alert alert-danger" role="alert">
+            user with this information already exist!
+            <span @click="formStatus.error = false" class="closebtn">
+              &times;
+            </span>
+          </div>
+        </Transition>
+        <div class="section">
+          <p class="header">Add new profile:</p>
+          <div
+            class="flex-row input-wrapper"
+            :class="{ 'input-error': errorMessages.name }"
+          >
+            <label for="newProfileName" class="label">Name:</label>
+            <input
+              id="newProfileName"
+              v-model="newProfile.name"
+              class="input"
+            />
+          </div>
+          <p class="error-message" v-show="errorMessages.name">
+            {{ errorMessages.name }}
+          </p>
+          <div
+            class="flex-row input-wrapper"
+            :class="{ 'input-error': errorMessages.email }"
+          >
+            <label class="label" for="newProfileEmail">Email:</label>
+            <input
+              type="email"
+              id="newProfileEmail"
+              v-model="newProfile.email"
+              class="input"
+            />
+          </div>
 
-    <div class="flex-row">
-      <Multiselect
-        @input="updateSelectedSpecializations"
-        :options="specializations"
-        :value="newProfile.description"
-      />
-    </div>
-    <button
-      type="submit"
-      class="add-btn"
-      :class="{
-        'disabled-button': !areFieldsValid,
-      }"
-      @click="addProfile"
-    >
-      Add
-    </button>
+          <p class="error-message" v-show="errorMessages.email">
+            {{ errorMessages.email }}
+          </p>
+
+          <div class="flex-row">
+            <Multiselect
+              @input="updateSelectedSpecializations"
+              :options="specializations"
+              :value="newProfile.description"
+            />
+          </div>
+          <button
+            type="submit"
+            class="add-btn"
+            :class="{
+              'disabled-button': !areFieldsValid,
+            }"
+            @click="addProfile"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -47,8 +79,19 @@ import Multiselect from "./Multiselect.vue";
 
 export default {
   components: { Multiselect },
+  props: {
+    profiles: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
+      formStatus: {
+        error: false,
+      },
+
+      showModal: false,
       areFieldsValid: false,
       newProfile: {
         name: "",
@@ -87,14 +130,28 @@ export default {
   },
   methods: {
     addProfile() {
-      if (this.checkAllFields()) {
-        console.log(this.newProfile);
+      const isUserExist = this.checkUserExist();
+      const areFieldsValid = this.checkAllFields();
+      if (areFieldsValid && !isUserExist) {
+        this.formStatus.error = false;
         this.$emit("addProfile", this.newProfile);
+      } else if (isUserExist) {
+        this.formStatus.error = true;
       }
     },
 
     updateSelectedSpecializations(value) {
       this.newProfile.description = [...value];
+    },
+
+    checkUserExist() {
+      let foundedUser = false;
+      this.profiles.map((profile) => {
+        if (profile.email === this.newProfile.email) {
+          foundedUser = true;
+        }
+      });
+      return foundedUser;
     },
 
     validateEmail(value) {
@@ -132,5 +189,122 @@ export default {
 .disabled-button {
   cursor: not-allowed;
   background-color: #92c5ae48;
+}
+.error-message {
+  text-align: left !important;
+  margin: -12px 0 16px 8px;
+  font-size: 14px;
+  color: #fd6262;
+  animation: errorFadeInDown 0.5s cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
+.input-error {
+  border: 1px solid #fd6262;
+}
+
+@keyframes errorFadeInDown {
+  0% {
+    -webkit-transform: translate3d(0, -10px, 0);
+    transform: translate3d(0, -10px, 0);
+  }
+
+  59% {
+    opacity: 1;
+    transform: skewX(20deg);
+  }
+  70%,
+  90% {
+    transform: skewX(-20deg);
+  }
+  100% {
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  text-align: center;
+  width: fit-content;
+  height: fit-content;
+  max-width: 22em;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  z-index: 999;
+  transform: none;
+  background: linear-gradient(
+    135deg,
+    rgba(65, 184, 131, 0.9),
+    rgba(52, 73, 94, 0.9)
+  );
+}
+
+.modal-overlay {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 998;
+  background: #111e2b;
+  opacity: 0.9;
+  cursor: pointer;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s linear;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.pop-enter-active,
+.pop-leave-active {
+  transition: transform 0.4s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;
+}
+
+.pop-enter,
+.pop-leave-to {
+  opacity: 0;
+  transform: scale(0.3) translateY(-50%);
+}
+
+.alert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+  color: #a94442;
+  opacity: 1;
+  margin-right: auto !important;
+  border-radius: 4px;
+}
+.alert .closebtn {
+  font-size: 20px;
+  cursor: pointer;
+}
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

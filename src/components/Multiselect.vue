@@ -133,7 +133,6 @@ export default {
 .multiselect {
   background: #fff;
   padding: 1.4em;
-
   display: flex;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -179,7 +178,7 @@ export default {
   padding: 5px 0;
   min-height: 55px;
   max-height: 188px;
-  overflow-y: auto;
+  overflow-y: auto !important;
 }
 
 .multiselect__option {

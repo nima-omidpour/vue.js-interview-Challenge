@@ -2,13 +2,19 @@
   <div id="app">
     <p>Profiles List</p>
     <div class="section">
-      <div class="flex-row">
+      <div class="flex-row input-wrapper">
         <label class="label" for="filter">Find profile:</label>
         <input id="filter" v-model="filter" class="input" />
       </div>
-      <div class="buttons">
-        <button @click="sortAsc">▲</button>
-        <button @click="sortDesc">▼</button>
+      <div class="options">
+        <div class="buttons">
+          <button @click="sortAsc">▲</button>
+          <button @click="sortDesc">▼</button>
+        </div>
+
+        <button @click="toggleNewProfile" class="buttons add-profile-btn">
+          add new profile
+        </button>
       </div>
 
       <TransitionGroup name="list" tag="div">
@@ -16,6 +22,7 @@
           v-for="profile in filteredProfiles"
           :key="profile.id"
           :profile="profile"
+          @toggle-like="toggleLike"
           class="profile"
         />
       </TransitionGroup>
@@ -32,7 +39,11 @@
       </div>
     </div>
 
-    <AddNewProfile @addProfile="addProfile" />
+    <AddNewProfile
+      :profiles="profiles"
+      ref="addNewProfile"
+      @addProfile="addProfile"
+    />
   </div>
 </template>
 
@@ -51,8 +62,6 @@ export default {
   data() {
     return {
       filter: "",
-
-      selectedSpecializations: ["Radiologist"],
       errorMessages: [],
       validations: { emailIsValid: false, nameIsValid: false },
       profiles: [
@@ -62,6 +71,7 @@ export default {
           email: "wojciech@poz.pl",
           description: "Anaesthesiologist",
           likes: 34,
+          isLiked: false,
         },
         {
           id: 2,
@@ -69,6 +79,7 @@ export default {
           email: "maria@poz.pl",
           description: "Radiologist",
           likes: 28,
+          isLiked: false,
         },
         {
           id: 3,
@@ -76,6 +87,7 @@ export default {
           email: "anna@poz.pl",
           description: "Surgeon",
           likes: 53,
+          isLiked: false,
         },
       ],
     };
@@ -90,13 +102,32 @@ export default {
   },
 
   methods: {
+    toggleLike(userProfile) {
+      this.profiles.map((profile) => {
+        if (profile.id === userProfile.id) {
+          if (!profile.isLiked) {
+            profile.isLiked = true;
+            profile.likes++;
+          } else if (profile.isLiked && profile.likes > 1) {
+            profile.isLiked = false;
+            profile.likes = profile.likes - 2;
+          } else {
+            profile.isLiked = false;
+            profile.likes = 0;
+          }
+        }
+      });
+    },
+    toggleNewProfile() {
+      this.$refs.addNewProfile.toggleModal();
+    },
     addProfile(newProfile) {
       this.profiles.push({
         id: this.profiles.length + 1,
         ...newProfile,
         likes: 0,
       });
-      console.log(newProfile);
+      this.$refs.addNewProfile.toggleModal();
     },
     sortAsc() {
       this.profiles.sort(function (a, b) {
@@ -185,6 +216,10 @@ button {
   display: flex;
   margin-bottom: 1em;
 }
+.input-wrapper {
+  overflow: hidden;
+  border-radius: 4px;
+}
 
 .label {
   width: 80px;
@@ -203,6 +238,7 @@ button {
   color: #8f8f8f;
   font-size: 1rem;
   outline: none;
+  padding-left: 0;
 }
 
 .buttons {
@@ -235,36 +271,21 @@ button {
 .list-leave-active {
   position: absolute;
 }
-
-.error-message {
-  text-align: left !important;
-  margin: -12px 0 16px 8px;
-  font-size: 14px;
-  color: #ef4444;
-  animation: errorFadeInDown 0.5s cubic-bezier(0.25, 0.8, 0.5, 1);
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 34px;
 }
-
-.input-error {
-  border: 1px solid #ef4444;
+button {
+  transition: all 0.2s;
 }
-
-@keyframes errorFadeInDown {
-  0% {
-    -webkit-transform: translate3d(0, -10px, 0);
-    transform: translate3d(0, -10px, 0);
-  }
-
-  59% {
-    opacity: 1;
-    transform: skewX(20deg);
-  }
-  70%,
-  90% {
-    transform: skewX(-20deg);
-  }
-  100% {
-    -webkit-transform: none;
-    transform: none;
-  }
+button:hover {
+  box-shadow: none;
+  transform: scale(0.98);
+}
+.add-profile-btn {
+  text-align: center;
+  justify-content: center;
 }
 </style>
