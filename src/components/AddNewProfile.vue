@@ -129,6 +129,9 @@ export default {
     },
   },
   methods: {
+    toggleModal() {
+      this.showModal = !this.showModal;
+    },
     addProfile() {
       const isUserExist = this.checkUserExist();
       const areFieldsValid = this.checkAllFields();
